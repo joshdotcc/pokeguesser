@@ -4,7 +4,7 @@
   let searchQuery = ''; // The query the user types in
   let pokemonList = []; // Initialize pokemonList as an empty array
   let filteredPokemon = []; // Array to hold filtered Pokémon based on search query
-  let pokemonInfo = {}; // Object to hold fetched Pokemon info
+  let pokemonInfo = {}; // Object to hold fetched Pokémon info for each Pokémon
 
   // Fetch Pokémon data from PokeAPI when the component mounts
   onMount(async () => {
@@ -17,62 +17,88 @@
 
   // Function to fetch and return Pokémon info
   function getPokemonInfo(pokemonName) {
-    // Check if info is already fetched, if so, return it immediately
     if (pokemonInfo[pokemonName]) {
       return pokemonInfo[pokemonName];
     }
-
-    // Start fetching Pokémon info asynchronously if not already fetched
     fetchPokemonData(pokemonName);
-    return null; // Return nothing until data is fetched
+    return null;
+  }
+
+  // Helper function to convert Roman numeral to Arabic numeral
+  function convertRomanToArabic(roman) {
+    const romanToArabic = {
+      "generation-i": 1,
+      "generation-ii": 2,
+      "generation-iii": 3,
+      "generation-iv": 4,
+      "generation-v": 5,
+      "generation-vi": 6,
+      "generation-vii": 7,
+      "generation-viii": 8,
+      "generation-ix": 9,
+    };
+
+    return romanToArabic[roman] || roman; // Default to the original if not found
   }
 
   // Helper function that actually fetches the Pokémon data
   async function fetchPokemonData(pokemonName) {
     try {
-      // Fetch Pokémon details (height, weight, typing, etc.)
       const pokemonResponse = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
       const pokemonData = await pokemonResponse.json();
 
-      // Get the typing, height, and weight of the Pokémon
       const types = pokemonData.types.map(t => t.type.name).join(", ");
       const height = pokemonData.height / 10; // Convert height to meters
       const weight = pokemonData.weight / 10; // Convert weight to kg
 
-      // Fetch the generation of the Pokémon from the species endpoint
       const speciesResponse = await fetch(pokemonData.species.url);
       const speciesData = await speciesResponse.json();
-      const generation = speciesData.generation.name;
+      const generation = convertRomanToArabic(speciesData.generation.name); // Convert Roman numeral to Arabic numeral
 
-      // Store the fetched data in pokemonInfo
+      const spriteUrl = pokemonData.sprites.front_default;
+
       pokemonInfo[pokemonName] = {
         types,
         height,
         weight,
         generation,
+        spriteUrl,
       };
     } catch (error) {
       console.error("Error fetching Pokémon info:", error);
-      pokemonInfo[pokemonName] = null; // Store error state if something fails
+      pokemonInfo[pokemonName] = null;
     }
   }
+
 
   // Function to filter Pokémon list based on search query
   $: filteredPokemon = pokemonList
     .filter(pokemon =>
-      pokemon.toLowerCase().startsWith(searchQuery.toLowerCase()) // Case-insensitive search
+      pokemon.toLowerCase().startsWith(searchQuery.toLowerCase())
     )
     .slice(0, 5); // Limit to 5 results
+
+  // Trigger search and info fetch automatically as the user types
+  async function onInput(event) {
+    searchQuery = event.target.value;
+
+    if (searchQuery && filteredPokemon.length) {
+      let i = 0;
+      while (i < filteredPokemon.length) {
+        await getPokemonInfo(filteredPokemon[i]);
+        i++;
+      }
+    }
+  }
 
   // Function to highlight the part of the name that matches the query
   function getHighlightedName(name, query) {
     name = String(name).charAt(0).toUpperCase() + String(name).slice(1);
-    const lowerName = name.toLowerCase(); // Convert name to lowercase for comparison
+    const lowerName = name.toLowerCase();
     const lowerQuery = query.toLowerCase();
     const index = lowerName.indexOf(lowerQuery);
 
-    if (index === -1) return name; // No match
-
+    if (index === -1) return name;
     return (
       name.slice(0, index) +
       '<strong>' +
@@ -81,44 +107,31 @@
       name.slice(index + query.length)
     );
   }
-
-  // Trigger search and info fetch automatically as the user types
-  async function onInput(event) {
-  searchQuery = event.target.value;
-  
-  // Automatically fetch Pokémon info for the current search query
-  if (searchQuery && filteredPokemon.length) {
-    let i = 0;
-    
-    // Use a for loop to handle async operations with await
-    while (i < filteredPokemon.length) {
-      await getPokemonInfo(filteredPokemon[i]);  // Ensure this is awaited
-      i++;
-    }
-  }
-}
 </script>
 
-<div>
+<div class="container">
   <input
     type="text"
     bind:value={searchQuery}
     placeholder="Type a Pokémon name..."
     on:input={onInput}
+    class="search-input"
   />
 
   {#if searchQuery}
-    <ul>
+    <ul class="suggestions-list">
       {#each filteredPokemon as pokemon}
-        <li>
-          <div>
-            {@html getHighlightedName(pokemon, searchQuery)}
-          </div>
+        <li class="suggestion-item">
 
-          <!-- Fetch Pokémon info automatically when it's available -->
-          <div>
+          <div class="pokemon-info">
             {#if pokemonInfo[pokemon]}
-              <div>
+              <div class='pokemon-main-details'>
+                <div class="pokemon-name">
+                  {@html getHighlightedName(pokemon, searchQuery)}
+                </div>
+                <img src={pokemonInfo[pokemon].spriteUrl} alt="{pokemon}" class="sprite" />
+              </div>
+              <div class="info">
                 <p><strong>Type(s):</strong> {pokemonInfo[pokemon].types}</p>
                 <p><strong>Height:</strong> {pokemonInfo[pokemon].height} m</p>
                 <p><strong>Weight:</strong> {pokemonInfo[pokemon].weight} kg</p>
@@ -134,24 +147,3 @@
   {/if}
 </div>
 
-<style>
-  input {
-    padding: 8px;
-    margin: 10px;
-    width: 200px;
-  }
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  li {
-    background: #f0f0f0;
-    padding: 5px;
-    margin: 2px;
-    cursor: pointer;
-  }
-  strong {
-    color: red; /* Highlight the matched text in red */
-  }
-</style>
