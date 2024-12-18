@@ -24,9 +24,8 @@
 
     // Select a random Pokémon
     randomPokemon = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-    await getPokemonInfo(randomPokemon); // Fetch its info
-    randomPokemonInfo = pokemonInfo // Store its info
-  });
+    await fetchRandomPokemonInfo(randomPokemon); // Fetch and store random Pokémon info
+});
 
   // Function to fetch and return Pokémon info
   function getPokemonInfo(pokemonName) {
@@ -105,6 +104,12 @@
     }
   }
 
+  // Fetch the data of the randomly selected Pokémon
+  async function fetchRandomPokemonInfo(pokemonName) {
+    const randomPokemonData = await fetchPokemonData(pokemonName);
+    randomPokemonInfo = pokemonInfo[pokemonName]; // Update the randomPokemonInfo with the fetched data
+  }
+
   // Function to filter Pokémon list based on search query
   $: filteredPokemon = pokemonList
     .filter(pokemon =>
@@ -149,8 +154,6 @@
     // Change the input value to the capitalized Pokémon name
     searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
 
-    
-
     // Process the guess and provide feedback only if randomPokemonInfo is populated
     if (randomPokemonInfo && remainingGuesses > 0) {
       const guessInfo = processGuess(pokemonName);
@@ -163,23 +166,27 @@
   }
 
   // Function to process the guess and provide feedback
-  function processGuess(pokemonName) {
-    if (!randomPokemonInfo) {
-      console.error("Random Pokémon info is not available yet.");
-      return;
-    }
-
-    const guessInfo = {
-      pokemonName,
-      generation: getFeedback("generation", pokemonName),
-      type1: getFeedback("type1", pokemonName),
-      type2: getFeedback("type2", pokemonName),
-      height: getFeedback("height", pokemonName),
-      weight: getFeedback("weight", pokemonName)
-    };
-
-    return guessInfo;
+  // Function to process the guess and provide feedback
+function processGuess(pokemonName) {
+  if (!randomPokemonInfo) {
+    console.error("Random Pokémon info is not available yet.");
+    return;
   }
+
+  const guessInfo = {
+    pokemonName,
+    generation: getFeedback("generation", pokemonName),
+    type1: getFeedback("type1", pokemonName),
+    type2: getFeedback("type2", pokemonName),
+    height: getFeedback("height", pokemonName),
+    weight: getFeedback("weight", pokemonName)
+  };
+
+  // Ensure we store the name of the random Pokémon being guessed correctly
+  guessInfo.randomPokemonName = randomPokemon; // Store the random Pokémon's name
+
+  return guessInfo;
+}
 
   // Function to provide feedback based on the guess
   function getFeedback(type, pokemonName) {
@@ -193,7 +200,7 @@
     }
 
     if (type === "generation") {
-      return guessInfo.generation === targetInfo.generation
+      return convertRomanToArabic(guessInfo.generation) === convertRomanToArabic(targetInfo.generation)
         ? "Correct"
         : guessInfo.generation < targetInfo.generation
         ? "Higher"
@@ -220,6 +227,7 @@
   }
 
 </script>
+
 <div class="container-lg">
   <h3>Your Guesses</h3>
   <div class="guesses">
@@ -239,8 +247,6 @@
   </div>
 </div>
 <div class="container">
-  <!-- Display guesses -->
-   
 
   <!-- Search input and suggestions list -->
   <input

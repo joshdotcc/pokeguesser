@@ -202,3 +202,9 @@ ul + div {
   text-align: center;
   border: 1px solid #ccc;
 }
+.badges{
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0px;;
+}
