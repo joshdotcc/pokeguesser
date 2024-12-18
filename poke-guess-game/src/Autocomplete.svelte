@@ -1,10 +1,18 @@
 <script>
   import { onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
 
   let searchQuery = ''; // The query the user types in
   let pokemonList = []; // Initialize pokemonList as an empty array
   let filteredPokemon = []; // Array to hold filtered Pokémon based on search query
   let pokemonInfo = {}; // Object to hold fetched Pokémon info for each Pokémon
+  let guesses = []; // Array to store the user's guesses
+  let remainingGuesses = 5; // Number of remaining guesses
+
+  const dispatch = createEventDispatcher(); // Dispatcher to send data to parent
+
+  let randomPokemon = ""; // Store the randomly selected Pokémon
+  let randomPokemonInfo = {}; // Store info of the randomly selected Pokémon
 
   // Fetch Pokémon data from PokeAPI when the component mounts
   onMount(async () => {
@@ -13,12 +21,17 @@
 
     // Populate pokemonList with names of all Pokémon
     pokemonList = pokemonData.results.map((pokemon) => pokemon.name);
+
+    // Select a random Pokémon
+    randomPokemon = pokemonList[Math.floor(Math.random() * pokemonList.length)];
+    await getPokemonInfo(randomPokemon); // Fetch its info
+    randomPokemonInfo = pokemonInfo // Store its info
   });
 
   // Function to fetch and return Pokémon info
   function getPokemonInfo(pokemonName) {
     if (pokemonInfo[pokemonName]) {
-      return pokemonInfo[pokemonName];
+      return pokemonInfo;
     }
     fetchPokemonData(pokemonName);
     return null;
@@ -131,15 +144,105 @@
 
   // Function to handle suggestion click
   function handleSuggestionClick(pokemonName) {
-  
     console.log(`You Chose ${pokemonName}!`);
 
     // Change the input value to the capitalized Pokémon name
     searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
-  }
-</script>
 
+    
+
+    // Process the guess and provide feedback only if randomPokemonInfo is populated
+    if (randomPokemonInfo && remainingGuesses > 0) {
+      const guessInfo = processGuess(pokemonName);
+      guesses = [...guesses, guessInfo];
+      remainingGuesses--;
+      console.log(guesses);
+    }
+    // Dispatch the selected Pokémon name to the parent component
+    dispatch('guessSelected', pokemonName);
+  }
+
+  // Function to process the guess and provide feedback
+  function processGuess(pokemonName) {
+    if (!randomPokemonInfo) {
+      console.error("Random Pokémon info is not available yet.");
+      return;
+    }
+
+    const guessInfo = {
+      pokemonName,
+      generation: getFeedback("generation", pokemonName),
+      type1: getFeedback("type1", pokemonName),
+      type2: getFeedback("type2", pokemonName),
+      height: getFeedback("height", pokemonName),
+      weight: getFeedback("weight", pokemonName)
+    };
+
+    return guessInfo;
+  }
+
+  // Function to provide feedback based on the guess
+  function getFeedback(type, pokemonName) {
+    const guessInfo = pokemonInfo[pokemonName];
+    const targetInfo = randomPokemonInfo;
+
+    // Ensure that the types exist before calling .includes
+    if (!guessInfo || !targetInfo) {
+      console.error(`Missing Pokémon info for ${pokemonName} or randomPokemon`);
+      return 'No Data';
+    }
+
+    if (type === "generation") {
+      return guessInfo.generation === targetInfo.generation
+        ? "Correct"
+        : guessInfo.generation < targetInfo.generation
+        ? "Higher"
+        : "Lower";
+    } else if (type === "type1") {
+      return guessInfo.types && targetInfo.types && targetInfo.types.includes(guessInfo.types[0]) ? "Correct" : "Incorrect";
+    } else if (type === "type2") {
+      return guessInfo.types && targetInfo.types && (targetInfo.types.length === 1 || targetInfo.types.includes(guessInfo.types[1]))
+        ? "Correct"
+        : "Incorrect";
+    } else if (type === "height") {
+      return guessInfo.height === targetInfo.height
+        ? "Correct"
+        : guessInfo.height < targetInfo.height
+        ? "Higher"
+        : "Lower";
+    } else if (type === "weight") {
+      return guessInfo.weight === targetInfo.weight
+        ? "Correct"
+        : guessInfo.weight < targetInfo.weight
+        ? "Higher"
+        : "Lower";
+    }
+  }
+
+</script>
+<div class="container-lg">
+  <h3>Your Guesses</h3>
+  <div class="guesses">
+    
+    {#each guesses as guess, index}
+      <div class="guess">
+        <p><strong>Guess {index + 1}:</strong> {guess.pokemonName}</p>
+        <ul>
+          <li>Generation: {guess.generation}</li>
+          <li>Type 1: {guess.type1}</li>
+          <li>Type 2: {guess.type2}</li>
+          <li>Height: {guess.height}</li>
+          <li>Weight: {guess.weight}</li>
+        </ul>
+      </div>
+    {/each}
+  </div>
+</div>
 <div class="container">
+  <!-- Display guesses -->
+   
+
+  <!-- Search input and suggestions list -->
   <input
     type="text"
     bind:value={searchQuery}
@@ -151,6 +254,7 @@
   {#if searchQuery}
     <ul class="suggestions-list">
       {#each filteredPokemon as pokemon}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
         <li class="suggestion-item" on:click={() => handleSuggestionClick(pokemon)}>
           <div class="pokemon-info">
             {#if pokemonInfo[pokemon]}
@@ -170,8 +274,6 @@
                 <p><strong>Weight:</strong> {pokemonInfo[pokemon].weight} kg</p>
                 <p><strong>Generation:</strong> {pokemonInfo[pokemon].generation}</p>
               </div>
-            {:else}
-              <p>Loading info...</p>
             {/if}
           </div>
         </li>

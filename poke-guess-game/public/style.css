@@ -190,3 +190,15 @@ ul + div {
     align-items: flex-start;
   }
 }
+.guesses {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 equal-width columns */
+  gap: 10px; /* Adjust the gap between items if necessary */
+  margin-top: 20px;;
+}
+
+.guess {
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
