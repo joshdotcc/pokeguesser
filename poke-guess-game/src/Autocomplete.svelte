@@ -92,8 +92,6 @@
     }
   }
 
-
-
   // Function to filter Pokémon list based on search query
   $: filteredPokemon = pokemonList
     .filter(pokemon =>
@@ -130,6 +128,15 @@
       name.slice(index + query.length)
     );
   }
+
+  // Function to handle suggestion click
+  function handleSuggestionClick(pokemonName) {
+  
+    console.log(`You Chose ${pokemonName}!`);
+
+    // Change the input value to the capitalized Pokémon name
+    searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
+  }
 </script>
 
 <div class="container">
@@ -144,8 +151,7 @@
   {#if searchQuery}
     <ul class="suggestions-list">
       {#each filteredPokemon as pokemon}
-        <li class="suggestion-item">
-
+        <li class="suggestion-item" on:click={() => handleSuggestionClick(pokemon)}>
           <div class="pokemon-info">
             {#if pokemonInfo[pokemon]}
               <div class='pokemon-main-details'>
@@ -173,5 +179,3 @@
     </ul>
   {/if}
 </div>
-
-
