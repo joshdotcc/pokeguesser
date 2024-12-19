@@ -318,6 +318,8 @@
     <!-- Search input and suggestions list -->
     <input
       type="text"
+      autocorrect="off" 
+      autocomplete="off"
       bind:value={searchQuery}
       placeholder="Type a Pokémon name..."
       on:input={onInput}
