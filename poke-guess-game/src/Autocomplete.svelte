@@ -19,16 +19,17 @@
 
   // Fetch Pokémon data from PokeAPI when the component mounts
   onMount(async () => {
-    const allPokemonData = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1000');
+    const allPokemonData = await fetch("https://pokeapi.co/api/v2/pokemon?limit=493");
     const pokemonData = await allPokemonData.json();
 
-    // Populate pokemonList with names of all Pokémon
-    pokemonList = pokemonData.results.map((pokemon) => pokemon.name);
+    // Store the first 493 Pokémon
+    pokemonList = pokemonData.results.map(p => p.name);
 
     // Select a random Pokémon
     randomPokemon = pokemonList[Math.floor(Math.random() * pokemonList.length)];
-    await fetchRandomPokemonInfo(randomPokemon); // Fetch and store random Pokémon info
-});
+    await fetchRandomPokemonInfo(randomPokemon);
+  });
+
 
   // Function to fetch and return Pokémon info
   function getPokemonInfo(pokemonName) {
@@ -290,7 +291,7 @@
 <div class="top-bar">
   <span class="remaining-guesses">Guesses Remaining: {remainingGuesses}</span>
 </div>
-<h1>Pokémon Guessing Game</h1>
+<h1>Pokémon Guessing Game (Gen 1-4)</h1>
 <div class="mobile-flip">
   <div class="container-lg">
     <h3>Your Guesses</h3>
