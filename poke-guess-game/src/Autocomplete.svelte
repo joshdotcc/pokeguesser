@@ -152,28 +152,31 @@
 
   // Function to handle suggestion click
   function handleSuggestionClick(pokemonName) {
-    if (remainingGuesses <= 0 || showModal) {
-      return; // Prevent further actions if the game is over or the modal is open
-    }
-
-    console.log(`You Chose ${pokemonName}!`);
-
-    searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
-
-    if (randomPokemonInfo) {
-      const guessInfo = processGuess(pokemonName);
-      guesses = [...guesses, guessInfo];
-      remainingGuesses--;
-
-      if (pokemonName.toLowerCase() === randomPokemon.toLowerCase()) {
-        handleWin();
-      } else if (remainingGuesses === 0) {
-        handleLoss();
-      }
-    }
-
-    dispatch('guessSelected', pokemonName);
+  if (remainingGuesses <= 0 || showModal) {
+    return; // Prevent further actions if the game is over or the modal is open
   }
+
+  searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
+
+  if (randomPokemonInfo) {
+    const guessInfo = processGuess(pokemonName);
+    guesses = [...guesses, guessInfo];
+    remainingGuesses--;
+
+    if (pokemonName.toLowerCase() === randomPokemon.toLowerCase()) {
+      handleWin();
+    } else if (remainingGuesses === 0) {
+      handleLoss();
+    }
+  }
+
+  dispatch('guessSelected', pokemonName);
+
+  // Clear input and suggestions
+  searchQuery = ""; // Reset the input field
+  filteredPokemon = []; // Clear the suggestions list
+}
+
 
     function handleWin() {
     showModal = true;
