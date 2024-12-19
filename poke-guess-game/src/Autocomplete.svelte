@@ -8,6 +8,9 @@
   let pokemonInfo = {}; // Object to hold fetched Pokémon info for each Pokémon
   let guesses = []; // Array to store the user's guesses
   let remainingGuesses = 5; // Number of remaining guesses
+  let showModal = false; // Whether the modal is visible
+  let modalTitle = ""; // Title for the modal
+  let modalMessage = ""; // Message for the modal
 
   const dispatch = createEventDispatcher(); // Dispatcher to send data to parent
 
@@ -149,27 +152,41 @@
 
   // Function to handle suggestion click
   function handleSuggestionClick(pokemonName) {
-    if (remainingGuesses <= 0) {
-      console.log("No guesses remaining!");
-      return;
+    if (remainingGuesses <= 0 || showModal) {
+      return; // Prevent further actions if the game is over or the modal is open
     }
 
     console.log(`You Chose ${pokemonName}!`);
 
-    // Capitalize the Pokémon name for display
     searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
 
-    // Process the guess and provide feedback only if randomPokemonInfo is populated
     if (randomPokemonInfo) {
       const guessInfo = processGuess(pokemonName);
       guesses = [...guesses, guessInfo];
-      remainingGuesses--; // Decrement the remaining guesses
-      console.log(guesses);
+      remainingGuesses--;
+
+      if (pokemonName.toLowerCase() === randomPokemon.toLowerCase()) {
+        handleWin();
+      } else if (remainingGuesses === 0) {
+        handleLoss();
+      }
     }
 
-    // Dispatch the selected Pokémon name to the parent component
     dispatch('guessSelected', pokemonName);
   }
+
+    function handleWin() {
+    showModal = true;
+    modalTitle = "Congratulations! You Win!";
+    modalMessage = `The correct Pokémon was ${randomPokemon.charAt(0).toUpperCase() + randomPokemon.slice(1)}!`;
+  }
+
+  function handleLoss() {
+    showModal = true;
+    modalTitle = "Sorry! Better Luck Next Time!";
+    modalMessage = `The Pokémon was ${randomPokemon.charAt(0).toUpperCase() + randomPokemon.slice(1)}.`;
+  }
+
 
   // Function to process the guess and provide feedback
   // Function to process the guess and provide feedback
@@ -248,7 +265,25 @@
 
 
 
+
 </script>
+{#if showModal}
+  <div class="modal-overlay">
+    <div class="modal">
+      <h2>{modalTitle}</h2>
+      <p>{modalMessage}</p>
+      <img src={randomPokemonInfo?.spriteUrl} alt="{randomPokemon}" class="random-pokemon-sprite" />
+      <ul>
+        <li><strong>Type(s):</strong> {#each randomPokemonInfo?.types as type}<span class="type-badge type-{type.toLowerCase()}">{type}</span>{/each}</li>
+        <li><strong>Height:</strong> {randomPokemonInfo?.height} m</li>
+        <li><strong>Weight:</strong> {randomPokemonInfo?.weight} kg</li>
+        <li><strong>Generation:</strong> {randomPokemonInfo?.generation}</li>
+      </ul>
+      <button  onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+{/if}
+
 <div class="top-bar">
   <span class="remaining-guesses">Guesses Remaining: {remainingGuesses}</span>
 </div>
