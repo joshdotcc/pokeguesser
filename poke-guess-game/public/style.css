@@ -287,11 +287,16 @@ button:hover {
     align-items: flex-start;
   }
   .guesses {
-    grid-template-columns: repeat(1, 1fr);
+    display: flex;
+    flex-direction: column-reverse;
 }
 body{
   padding-top: 75px;
 }
+.mobile-flip{
+  display: flex;
+  flex-direction: column-reverse;
+
 }
 
 /* Additional Spacing */
