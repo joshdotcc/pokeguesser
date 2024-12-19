@@ -149,41 +149,49 @@
 
   // Function to handle suggestion click
   function handleSuggestionClick(pokemonName) {
+    if (remainingGuesses <= 0) {
+      console.log("No guesses remaining!");
+      return;
+    }
+
     console.log(`You Chose ${pokemonName}!`);
 
-    // Change the input value to the capitalized Pokémon name
+    // Capitalize the Pokémon name for display
     searchQuery = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
 
     // Process the guess and provide feedback only if randomPokemonInfo is populated
-    if (randomPokemonInfo && remainingGuesses > 0) {
+    if (randomPokemonInfo) {
       const guessInfo = processGuess(pokemonName);
       guesses = [...guesses, guessInfo];
-      remainingGuesses--;
+      remainingGuesses--; // Decrement the remaining guesses
       console.log(guesses);
     }
+
     // Dispatch the selected Pokémon name to the parent component
     dispatch('guessSelected', pokemonName);
   }
 
   // Function to process the guess and provide feedback
   // Function to process the guess and provide feedback
-function processGuess(pokemonName) {
+  function processGuess(pokemonName) {
   if (!randomPokemonInfo) {
     console.error("Random Pokémon info is not available yet.");
     return;
   }
 
+  // Capitalize the Pokémon name
+  const capitalizedPokemonName = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
+
   const guessInfo = {
-    pokemonName,
+    pokemonName: capitalizedPokemonName,
+    spriteUrl: pokemonInfo[pokemonName]?.spriteUrl, // Include the sprite URL
     generation: getFeedback("generation", pokemonName),
     type1: getFeedback("type1", pokemonName),
     type2: getFeedback("type2", pokemonName),
     height: getFeedback("height", pokemonName),
-    weight: getFeedback("weight", pokemonName)
+    weight: getFeedback("weight", pokemonName),
+    randomPokemonName: randomPokemon // Store the random Pokémon's name
   };
-
-  // Ensure we store the name of the random Pokémon being guessed correctly
-  guessInfo.randomPokemonName = randomPokemon; // Store the random Pokémon's name
 
   return guessInfo;
 }
@@ -193,7 +201,6 @@ function processGuess(pokemonName) {
     const guessInfo = pokemonInfo[pokemonName];
     const targetInfo = randomPokemonInfo;
 
-    // Ensure that the types exist before calling .includes
     if (!guessInfo || !targetInfo) {
       console.error(`Missing Pokémon info for ${pokemonName} or randomPokemon`);
       return 'No Data';
@@ -201,51 +208,72 @@ function processGuess(pokemonName) {
 
     if (type === "generation") {
       return convertRomanToArabic(guessInfo.generation) === convertRomanToArabic(targetInfo.generation)
-        ? "Correct"
+        ? `<span>${guessInfo.generation}</span> <span class='correct'>Correct</span>`
         : guessInfo.generation < targetInfo.generation
-        ? "Higher"
-        : "Lower";
-    } else if (type === "type1") {
-      return guessInfo.types && targetInfo.types && targetInfo.types.includes(guessInfo.types[0]) ? "Correct" : "Incorrect";
-    } else if (type === "type2") {
-      return guessInfo.types && targetInfo.types && (targetInfo.types.length === 1 || targetInfo.types.includes(guessInfo.types[1]))
-        ? "Correct"
-        : "Incorrect";
+        ? `<span>${guessInfo.generation}</span> <span class='incorrect'>Higher</span>`
+        : `<span>${guessInfo.generation}</span> <span class='incorrect'>Lower</span>`;
+    } else if (type === "type1" || type === "type2") {
+      const typeIndex = type === "type1" ? 0 : 1;
+      const guessType = guessInfo.types[typeIndex];
+      const targetTypes = targetInfo.types;
+
+      if (typeIndex === 1) { // Handling for type2 specifically
+        if (!guessType) {
+          // If the guess lacks a type2, check if the target also lacks it
+          return targetTypes[1]
+            ? `<span>No Type</span> <span class='incorrect'>Incorrect</span>` // Target has a type2
+            : `<span>No Type</span> <span class='correct'>Correct</span>`; // Both lack type2
+        }
+      }
+
+      // General type match logic
+      const isCorrect = targetTypes.includes(guessType);
+      return isCorrect
+        ? `<span class="type-badge type-${guessType.toLowerCase()}">${guessType}</span> <span class='correct'>Correct</span>`
+        : `<span class="type-badge type-${guessType.toLowerCase()}">${guessType}</span> <span class='incorrect'>Incorrect</span>`;
     } else if (type === "height") {
       return guessInfo.height === targetInfo.height
-        ? "Correct"
+        ? `<span>${guessInfo.height}</span> <span class='correct'>Correct</span>`
         : guessInfo.height < targetInfo.height
-        ? "Higher"
-        : "Lower";
+        ? `<span>${guessInfo.height}</span> <span class='incorrect'>Higher</span>`
+        : `<span>${guessInfo.height}</span> <span class='incorrect'>Lower</span>`;
     } else if (type === "weight") {
       return guessInfo.weight === targetInfo.weight
-        ? "Correct"
+        ? `<span>${guessInfo.weight}</span> <span class='correct'>Correct</span>`
         : guessInfo.weight < targetInfo.weight
-        ? "Higher"
-        : "Lower";
+        ? `<span>${guessInfo.weight}</span> <span class='incorrect'>Higher</span>`
+        : `<span>${guessInfo.weight}</span> <span class='incorrect'>Lower</span>`;
     }
-  }
+}
+
+
 
 </script>
-
+<div class="top-bar">
+  <span class="remaining-guesses">Guesses Remaining: {remainingGuesses}</span>
+</div>
+<h1>Pokémon Guessing Game</h1>
 <div class="container-lg">
   <h3>Your Guesses</h3>
   <div class="guesses">
-    
     {#each guesses as guess, index}
       <div class="guess">
         <p><strong>Guess {index + 1}:</strong> {guess.pokemonName}</p>
+        {#if guess.spriteUrl}
+          <img src={guess.spriteUrl} alt="{guess.pokemonName}" class="guess-sprite" />
+        {/if}
         <ul>
-          <li>Generation: {guess.generation}</li>
-          <li>Type 1: {guess.type1}</li>
-          <li>Type 2: {guess.type2}</li>
-          <li>Height: {guess.height}</li>
-          <li>Weight: {guess.weight}</li>
+          <li>Generation: {@html guess.generation}</li>
+          <li>Type 1: {@html guess.type1}</li>
+          <li>Type 2: {@html guess.type2}</li>
+          <li>Height: {@html guess.height}</li>
+          <li>Weight: {@html guess.weight}</li>
         </ul>
       </div>
     {/each}
   </div>
 </div>
+
 <div class="container">
 
   <!-- Search input and suggestions list -->

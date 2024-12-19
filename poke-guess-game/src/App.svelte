@@ -13,7 +13,7 @@
 <main>
   <style src="./style.css"></style>
 
-  <h1>Pokémon Guessing Game</h1>
+  
 
   <!-- Pass the user guess to GuessFeedback as a prop -->
   <Autocomplete on:guessSelected={handleGuessSelected} />

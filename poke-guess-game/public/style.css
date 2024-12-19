@@ -194,17 +194,42 @@ ul + div {
   display: grid;
   grid-template-columns: repeat(5, 1fr); /* 5 equal-width columns */
   gap: 10px; /* Adjust the gap between items if necessary */
-  margin-top: 20px;;
+  margin-top: 20px;
+  min-height: 350px;
 }
 
 .guess {
-  padding: 20px;
+  padding: 10px;
   text-align: center;
   border: 1px solid #ccc;
+}
+.guess ul li {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
 }
 .badges{
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   margin: 20px 0px;;
+}
+.correct{
+  color: #008000;
+}
+.incorrect{
+  color: red;
+}
+.top-bar {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #f9f9f9;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
