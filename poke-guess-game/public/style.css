@@ -289,6 +289,9 @@ button:hover {
   .guesses {
     grid-template-columns: repeat(1, 1fr);
 }
+body{
+  padding-top: 75px;
+}
 }
 
 /* Additional Spacing */
