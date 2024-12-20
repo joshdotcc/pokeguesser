@@ -123,33 +123,47 @@
 
   // Trigger search and info fetch automatically as the user types
   async function onInput(event) {
-    searchQuery = event.target.value;
+  const unsafeInput = event.target.value;
 
-    if (searchQuery && filteredPokemon.length) {
-      let i = 0;
-      while (i < filteredPokemon.length) {
-        await getPokemonInfo(filteredPokemon[i]);
-        i++;
-      }
+  // Trim the input and sanitize by removing unwanted characters
+  searchQuery = unsafeInput.trim().replace(/[^a-zA-Z0-9\s-]/g, "");
+
+  if (searchQuery && filteredPokemon.length) {
+    let i = 0;
+    while (i < filteredPokemon.length) {
+      await getPokemonInfo(filteredPokemon[i]);
+      i++;
     }
+  }
+}
+
+  // Works to prevent malicious code execution, replaces <>&
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
   }
 
   // Function to highlight the part of the name that matches the query
   function getHighlightedName(name, query) {
-    name = String(name).charAt(0).toUpperCase() + String(name).slice(1);
+    name = escapeHTML(String(name).charAt(0).toUpperCase() + String(name).slice(1));
     const lowerName = name.toLowerCase();
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = escapeHTML(query.toLowerCase());
     const index = lowerName.indexOf(lowerQuery);
 
     if (index === -1) return name;
     return (
       name.slice(0, index) +
-      '<strong>' +
-      name.slice(index, index + query.length) +
-      '</strong>' +
-      name.slice(index + query.length)
+      "<strong>" +
+      name.slice(index, index + lowerQuery.length) +
+      "</strong>" +
+      name.slice(index + lowerQuery.length)
     );
   }
+
 
   // Function to handle suggestion click
   function handleSuggestionClick(pokemonName) {
