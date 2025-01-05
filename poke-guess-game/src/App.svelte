@@ -138,32 +138,33 @@
   <!-- Game Title -->
   <h1>Pokémon Guessing Game (Gen 1-4)</h1>
 
-  <div class="mobile-flip">
+
     <div class="container-lg">
+      <div class="container left">
+        <!-- Search bar -->
+        <input
+                type="text"
+                autocomplete="off"
+                bind:value={searchQuery}
+                placeholder="Type a Pokémon name..."
+                on:input={onInput}
+                class="search-input"
+        />
+
+        <!-- Pokémon suggestions -->
+        <PokemonSuggestions
+                {searchQuery}
+                {filteredPokemon}
+                {pokemonInfo}
+                handleSuggestionClick={handleSuggestionClick}
+        />
+      </div>
       <h3>Your Guesses</h3>
 
       <!-- Player's Guesses -->
       <Guesses {guesses} />
 
-    <div class="container">
-      <!-- Search bar -->
-      <input
-              type="text"
-              autocomplete="off"
-              bind:value={searchQuery}
-              placeholder="Type a Pokémon name..."
-              on:input={onInput}
-              class="search-input"
-      />
 
-      <!-- Pokémon suggestions -->
-      <PokemonSuggestions
-              {searchQuery}
-              {filteredPokemon}
-              {pokemonInfo}
-              handleSuggestionClick={handleSuggestionClick}
-      />
-    </div>
   </div>
-  </div>
+
 </main>
