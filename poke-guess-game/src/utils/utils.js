@@ -1,4 +1,14 @@
-// Formats autocomplete name to show what aspects match the user guess
+// Escaping the input string to ensure everything is interpreted literally preventing XSS
+export function escapeHTML(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Highlignts the users guess properly by slicing the string (also supports the guess being a string contained in a pokemon name)
 export function getHighlightedName(name, query) {
     name = escapeHTML(name.charAt(0).toUpperCase() + name.slice(1));
     const lowerName = name.toLowerCase();

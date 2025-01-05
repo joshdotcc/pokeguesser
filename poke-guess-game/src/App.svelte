@@ -6,7 +6,7 @@
   // Import API, utility, and game functions
   import { fetchAllPokemon, fetchPokemonData } from './utils/api.js';
   import { processGuess } from './utils/game.js';
-  import {getHighlightedName } from './utils/utils.js';
+  import {escapeHTML, getHighlightedName } from './utils/utils.js';
 
   // Game state and variables
   let searchQuery = '';
