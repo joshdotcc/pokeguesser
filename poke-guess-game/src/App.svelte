@@ -174,6 +174,7 @@
       {#if searchQuery}
         <ul class="suggestions-list">
           {#each filteredPokemon as pokemon}
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
             <li class="suggestion-item" on:click={() => handleSuggestionClick(pokemon)}>
               <div class="pokemon-info">
                 <!-- Pokémon details -->
