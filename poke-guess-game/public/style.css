@@ -1,6 +1,6 @@
-@import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');               
+@import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
 
-/* Global Reset */
+/* Global styles */
 * {
   margin: 0;
   padding: 0;
@@ -15,8 +15,8 @@ html, body {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-  background-color: #121212; /* Dark background */
-  color: #f1f1f1; /* Light text */
+  background-color: #121212;
+  color: #f1f1f1;
   padding: 20px;
 }
 
@@ -37,16 +37,22 @@ main {
 
 .guesses {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 equal-width columns */
-  gap: 10px; /* Adjust the gap between items if necessary */
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
   margin-top: 20px;
   min-height: 350px;
 }
 
 .guess {
-  padding: 10px;
+  padding: 15px;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 2px solid #2e2e2e;
+  border-radius: 4px;
+}
+
+/* Header */
+h1 {
+  margin-bottom: 25px;
 }
 
 /* Top Bar */
@@ -62,11 +68,6 @@ main {
   font-weight: bold;
   color: #333;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Header */
-h1 {
-  margin-bottom: 25px;
 }
 
 /* Form & Input */
@@ -109,8 +110,8 @@ li {
   font-size: 16px;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%; /* Make list items take full width */
-  flex-wrap: wrap; /* Allow for responsive layout */
+  width: 100%;
+  flex-wrap: wrap;
 }
 
 li:hover {
@@ -153,7 +154,7 @@ li:hover img {
   align-items: flex-start;
   justify-content: space-evenly;
   min-height: 120px;
-  width: 100%; 
+  width: 100%;
   max-width: 245px;
 }
 
@@ -162,7 +163,7 @@ strong {
   font-weight: normal;
 }
 
-/* Pokémon Types */
+/* Type Badges */
 .pokemon-types {
   margin-top: 10px;
   display: flex;
@@ -175,13 +176,12 @@ strong {
   padding: 3px 8px;
   margin: 3px;
   font-size: 14px;
-  border-radius: 12px; /* Rounded edges */
+  border-radius: 12px;
   color: white;
   font-weight: 600;
   transition: background-color 0.3s ease;
 }
 
-/* Pokémon Type Colors */
 .type-normal { background-color: #A8A77A; }
 .type-fire { background-color: #EE8130; }
 .type-water { background-color: #6390F0; }
@@ -255,14 +255,7 @@ button:hover {
   background: #0056b3;
 }
 
-/* Misc */
-.badges {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 20px 0;
-}
-
+/* Utility Classes */
 .correct {
   color: #008000;
 }
@@ -271,7 +264,14 @@ button:hover {
   color: red;
 }
 
-/* Responsiveness */
+.badges {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+/* Media Queries */
 @media (max-width: 800px) {
   .container {
     max-width: 90%;
@@ -286,21 +286,27 @@ button:hover {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .guesses {
     display: flex;
     flex-direction: column-reverse;
-}
-body{
-  padding-top: 75px;
-}
-.mobile-flip{
-  display: flex;
-  flex-direction: column-reverse;
+  }
 
-}
+  body {
+    padding-top: 75px;
+  }
+
+  .mobile-flip {
+    display: flex;
+    flex-direction: column-reverse;
+  }
 }
 
-/* Additional Spacing */
 ul + div {
   margin-top: 20px;
+}
+
+.guess li:hover {
+  transform: none;
+  cursor: default;
 }

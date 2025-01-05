@@ -1,13 +1,15 @@
 <script>
   import Modal from './components/Modal.svelte';
+  import PokemonSuggestions from "./components/PokemonSuggestions.svelte";
+  import Guesses from './components/Guesses.svelte';
   import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
 
   // Import API, utility, and game functions
   import { fetchAllPokemon, fetchPokemonData } from './utils/api.js';
   import { processGuess } from './utils/game.js';
-  import {escapeHTML, getHighlightedName } from './utils/utils.js';
-  import { sanitizeInput } from './utils/utils.js';
+  import {escapeHTML, getHighlightedName, sanitizeInput } from './utils/utils.js';
+
 
   // Game state and variables
   let searchQuery = '';
@@ -141,24 +143,7 @@
       <h3>Your Guesses</h3>
 
       <!-- Player's Guesses -->
-      <div class="guesses">
-        {#each guesses as guess, index}
-          <div class="guess">
-            <p><strong>Guess {index + 1}:</strong> {guess.pokemonName}</p>
-            {#if guess.spriteUrl}
-              <img src={guess.spriteUrl} alt="{guess.pokemonName}" class="guess-sprite" />
-            {/if}
-            <ul>
-              <li>Generation: {@html guess.generation}</li>
-              <li>Type 1: {@html guess.type1}</li>
-              <li>Type 2: {@html guess.type2}</li>
-              <li>Height: {@html guess.height}</li>
-              <li>Weight: {@html guess.weight}</li>
-            </ul>
-          </div>
-        {/each}
-      </div>
-    </div>
+      <Guesses {guesses} />
 
     <div class="container">
       <!-- Search bar -->
@@ -172,36 +157,13 @@
       />
 
       <!-- Pokémon suggestions -->
-      {#if searchQuery}
-        <ul class="suggestions-list">
-          {#each filteredPokemon as pokemon}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <li class="suggestion-item" on:click={() => handleSuggestionClick(pokemon)}>
-              <div class="pokemon-info">
-                <!-- Pokémon details -->
-                {#if pokemonInfo[pokemon]}
-                  <div class="pokemon-main-details">
-                    <div class="pokemon-name">
-                      {@html getHighlightedName(pokemon, searchQuery)}
-                    </div>
-                    <img src={pokemonInfo[pokemon].spriteUrl} alt="{pokemon}" class="sprite" />
-                  </div>
-                  <div class="info">
-                    <p><strong>Type(s):</strong>
-                      {#each pokemonInfo[pokemon].types as type}
-                        <span class="type-badge type-{type.toLowerCase()}">{type}</span>
-                      {/each}
-                    </p>
-                    <p><strong>Height:</strong> {pokemonInfo[pokemon].height} m</p>
-                    <p><strong>Weight:</strong> {pokemonInfo[pokemon].weight} kg</p>
-                    <p><strong>Generation:</strong> {pokemonInfo[pokemon].generation}</p>
-                  </div>
-                {/if}
-              </div>
-            </li>
-          {/each}
-        </ul>
-      {/if}
+      <PokemonSuggestions
+              {searchQuery}
+              {filteredPokemon}
+              {pokemonInfo}
+              handleSuggestionClick={handleSuggestionClick}
+      />
     </div>
+  </div>
   </div>
 </main>
