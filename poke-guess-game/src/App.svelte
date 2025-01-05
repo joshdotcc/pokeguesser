@@ -7,6 +7,7 @@
   import { fetchAllPokemon, fetchPokemonData } from './utils/api.js';
   import { processGuess } from './utils/game.js';
   import {escapeHTML, getHighlightedName } from './utils/utils.js';
+  import { sanitizeInput } from './utils/utils.js';
 
   // Game state and variables
   let searchQuery = '';
@@ -55,8 +56,8 @@
   async function onInput(event) {
     const input = event.target.value;
 
-    // Trim and sanitize the input
-    searchQuery = input.trim().replace(/[^a-zA-Z0-9\s-]/g, "");
+    // Use the sanitizeInput utility function
+    searchQuery = sanitizeInput(input);
 
     // Preload Pokemon info for the filtered Pokémon list
     if (searchQuery && filteredPokemon.length) {
