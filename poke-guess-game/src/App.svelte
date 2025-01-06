@@ -137,11 +137,14 @@
 
   <!-- Game Title -->
   <h1>Pokémon Guessing Game (Gen 1-4)</h1>
-    <div class="container-lg">
-      <h3>Your Guesses</h3>
+    <div class="container-lg mobile-flip">
+      <div class="guesses-container">
+        <h3>Your Guesses</h3>
       <!-- Player's Guesses -->
       <Guesses {guesses} />
+      </div>
       
+
       <div class="container left">
         <!-- Search bar -->
         <input
@@ -161,8 +164,6 @@
                 handleSuggestionClick={handleSuggestionClick}
         />
       </div>
-      
-
 
   </div>
 
