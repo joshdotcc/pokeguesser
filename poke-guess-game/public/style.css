@@ -35,12 +35,6 @@ main {
   padding: 10px;
 }
 
-.container.left{
-  margin-left: 0;
-  padding-left: 0;
-  padding-bottom: 45px;
-  position: relative;
-}
 
 .guesses {
   display: grid;
@@ -105,33 +99,6 @@ ul {
   flex-direction: column;
   gap: 10px;
 }
-ul.suggestions-list {
-  position: absolute;
-  width: 100%;
-  background: #2e2e2e;
-  padding: 10px;
-  border-radius: 5px;
-  max-height: 500px;
-  overflow-y: scroll;
-}
-
-ul.suggestions-list::-webkit-scrollbar {
-  width: 12px;
-}
-
-ul.suggestions-list::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey;
-  border-radius: 7px;
-}
-
-ul.suggestions-list::-webkit-scrollbar-thumb {
-  background: #4e4e4e;
-  border-radius: 10px;
-}
-
-ul.suggestions-list::-webkit-scrollbar-thumb:hover {
-  background: #5e5e5e;
-}
 
 li {
   background-color: #1f1f1f;
@@ -154,8 +121,8 @@ li:hover {
 }
 
 img {
-  width: 100px;
-  height: 100px;
+  width: 85px;
+  height: 85px;
   object-fit: contain;
   border-radius: 10px;
   margin-right: 15px;
@@ -187,7 +154,7 @@ li:hover img {
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
-  min-height: 120px;
+  min-height: 110px;
   width: 100%;
   max-width: 245px;
 }
