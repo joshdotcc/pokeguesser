@@ -5,9 +5,12 @@
 <div class="guesses">
     {#each guesses as guess, index}
         <div class="guess">
-            <p><strong>Guess {index + 1}:</strong> {guess.pokemonName}</p>
+            <p><strong>Guess {index + 1}:</strong> </p>
             {#if guess.spriteUrl}
-                <img src={guess.spriteUrl} alt="{guess.pokemonName}" class="guess-sprite" />
+                <div class="guess-sprite-container">
+                    <img src={guess.spriteUrl} alt="{guess.pokemonName}" class="guess-sprite" />
+                    {guess.pokemonName}
+                </div>
             {/if}
             <ul>
                 <li>Generation: {@html guess.generation}</li>
